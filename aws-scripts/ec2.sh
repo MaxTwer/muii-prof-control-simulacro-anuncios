@@ -17,11 +17,11 @@ KEY_NAME="vockey"
 # Ubuntu Server 26.04 LTS (x86_64, HVM, SSD gp3).
 AMI_ID="ami-0b6d9d3d33ba97d99"
 
-# TODO: Perfil de instancia. La instancia EC2 necesita el perfil de AWS Academy para acceder a los secretos. Escribe aquí el nombre del perfil.
-INSTANCE_PROFILE=<perfil>
+# Perfil de instancia de AWS Academy para acceder a Secrets Manager.
+INSTANCE_PROFILE="LabInstanceProfile"
 
-# TODO: Tipo de instancia. Debe ser de la familia t2 y tener 1 vCPU y 1 GiB de RAM. Escribe aquí el tipo.
-INSTANCE_TYPE=<tipo>
+# t2.micro: 1 vCPU y 1 GiB de RAM.
+INSTANCE_TYPE="t2.micro"
 
 echo -n "Creando el grupo de seguridad... "
 SG_ID=$(aws ec2 create-security-group \
@@ -32,24 +32,23 @@ SG_ID=$(aws ec2 create-security-group \
 echo "listo."
 
 echo -n "Creando regla de acceso (http)... "
-# TODO: Abre al mundo (0.0.0.0/0) únicamente el puerto 80 (HTTP). Ni el 8080 de Spring Boot ni el 443 deben quedar accesibles desde fuera.
+# Abre al mundo únicamente el puerto 80 (HTTP).
 aws ec2 authorize-security-group-ingress \
     --group-id "$SG_ID" \
     --protocol tcp \
-    --port <puerto> \
-    --cidr <origen> \
+    --port 80 \
+    --cidr 0.0.0.0/0 \
     --output text >/dev/null
 echo "listo."
 
 echo -n "Creando regla de acceso (ssh)... "
-# TODO: Permite SSH (puerto 22) solo desde la IP pública de la máquina desde la que despliegas (los scripts usan ssh y scp), con CIDR /32.
-# Pista: https://checkip.amazonaws.com devuelve tu IP pública.
-MY_IP=<tu ip publica>
+# Permite SSH solo desde la IP pública de la máquina desde la que despliegas.
+MY_IP=$(curl -fsS https://checkip.amazonaws.com | tr -d '[:space:]')
 aws ec2 authorize-security-group-ingress \
     --group-id "$SG_ID" \
     --protocol tcp \
-    --port <puerto> \
-    --cidr <tu ip>/32 \
+    --port 22 \
+    --cidr "$MY_IP/32" \
     --output text >/dev/null
 echo "listo."
 

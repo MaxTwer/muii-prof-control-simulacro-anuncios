@@ -18,9 +18,9 @@ if [ ! -f "$KEY_PATH" ]; then
 fi
 
 # TODO: Copia aquí, a mano, la IP pública de la instancia y, desde params.txt, el nombre del secreto y el EXAM_ID.
-PUBLIC_IP=<ip publica>
-SECRET_NAME=<nombre del secreto>
-EXAM_ID=<EXAM_ID>
+PUBLIC_IP=34.235.245.48
+SECRET_NAME=prod/anuncios/110371
+EXAM_ID=110371
 
 BACKEND_PATH="$PROJECT_ROOT/back"
 
